@@ -3,6 +3,7 @@ using YolkStudio.Pokemon.Infrastructure.Data;
 using YolkStudio.Pokemon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using YolkStudio.Pokemon.Api.Trainers;
+using YolkStudio.Pokemon.Core.Pokemons;
 using YolkStudio.Pokemon.Core.Trainers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,9 @@ builder.Services.AddDbContext<PokemonDbContext>(options =>
 
 builder.Services.AddScoped<ITrainerService, TrainerService>();
 builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
+
+builder.Services.AddScoped<IPokemonService, PokemonService>();
+builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 
 var app = builder.Build();
 

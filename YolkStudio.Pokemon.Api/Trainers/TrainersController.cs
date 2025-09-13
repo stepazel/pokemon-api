@@ -63,8 +63,8 @@ public class TrainersController : BaseController
     {
         return Ok();
     }
+    
     // TODO
-    // Retrieve all trainers
     // Retrieve a specific trainer along with their Pokemons
     // Update trainer information
     // Delete a trainer
