@@ -24,4 +24,9 @@ public class TrainerRepository : ITrainerRepository
     {
         return await _context.Trainers.AnyAsync(x => x.Name == name);
     }
+
+    public async Task<IEnumerable<Trainer>> GetAllAsync()
+    {
+        return await _context.Trainers.ToListAsync();
+    }
 }

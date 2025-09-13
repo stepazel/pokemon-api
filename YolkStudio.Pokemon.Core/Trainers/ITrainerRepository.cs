@@ -4,4 +4,5 @@ public interface ITrainerRepository
 {
     Task<Trainer> AddAsync(Trainer trainer);
     Task<bool> DoesExistAsync(string name);
+    Task<IEnumerable<Trainer>> GetAllAsync(); 
 }

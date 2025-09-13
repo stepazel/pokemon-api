@@ -49,8 +49,16 @@ public class TrainersController : BaseController
             []));
     }
 
-
     [HttpGet]
+    public async Task<IActionResult> GetAllTrainers()
+    {
+        var result = await _trainerService.GetAllTrainersAsync(new GetAllTrainersQuery());
+
+        return Ok(new ApiResponse<IEnumerable<TrainerDto>>(
+             HttpStatusCode.OK, "Trainers retrieved successfully", result));
+    }
+
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTrainer(int id)
     {
         return Ok();

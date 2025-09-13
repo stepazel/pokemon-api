@@ -1,3 +1,5 @@
+using YolkStudio.Pokemon.Core.Extensions;
+
 namespace YolkStudio.Pokemon.Core.Trainers;
 
 public class TrainerService : ITrainerService
@@ -30,14 +32,22 @@ public class TrainerService : ITrainerService
             createdTrainer.Id!.Value, // TODO jak vyresit ten vykricnik?
             createdTrainer.Name,
             createdTrainer.Region,
-            createdTrainer.BirthDate,
-            createdTrainer.CreatedAt,
+            createdTrainer.BirthDate.ToUtcDateTimeOffset(),
+            createdTrainer.CreatedAt.ToUtcDateTimeOffset(),
             createdTrainer.Wins,
             createdTrainer.Losses));
     }
 
-    // public Task<IEnumerable<Trainer>> GetAllTrainersAsync()
-    // {
-    //     return Task.CompletedTask;
-    // }
+    public async Task<IEnumerable<TrainerDto>> GetAllTrainersAsync(GetAllTrainersQuery query)
+    {
+        var allTrainers = await _repository.GetAllAsync();
+        return allTrainers.Select(t => new TrainerDto(
+            t.Id!.Value,
+            t.Name,
+            t.Region,
+            t.BirthDate.ToUtcDateTimeOffset(),
+            t.CreatedAt.ToUtcDateTimeOffset(),
+            t.Wins,
+            t.Losses));
+    }
 }
