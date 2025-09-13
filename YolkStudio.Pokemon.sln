@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YolkStudio.Pokemon.Api", "YolkStudio.Pokemon.Api\YolkStudio.Pokemon.Api.csproj", "{13EB85B7-3D74-4A55-8CCB-8A8281C71132}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YolkStudio.Pokemon.Core", "YolkStudio.Pokemon.Core\YolkStudio.Pokemon.Core.csproj", "{6CAC36F0-AE0B-4A92-871F-5736F01B1B17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YolkStudio.Pokemon.Infrastructure", "YolkStudio.Pokemon.Infrastructure\YolkStudio.Pokemon.Infrastructure.csproj", "{E7B1A10D-5F9F-4368-8612-0733F675BF9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{13EB85B7-3D74-4A55-8CCB-8A8281C71132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13EB85B7-3D74-4A55-8CCB-8A8281C71132}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13EB85B7-3D74-4A55-8CCB-8A8281C71132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CAC36F0-AE0B-4A92-871F-5736F01B1B17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CAC36F0-AE0B-4A92-871F-5736F01B1B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CAC36F0-AE0B-4A92-871F-5736F01B1B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CAC36F0-AE0B-4A92-871F-5736F01B1B17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7B1A10D-5F9F-4368-8612-0733F675BF9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B1A10D-5F9F-4368-8612-0733F675BF9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B1A10D-5F9F-4368-8612-0733F675BF9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B1A10D-5F9F-4368-8612-0733F675BF9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

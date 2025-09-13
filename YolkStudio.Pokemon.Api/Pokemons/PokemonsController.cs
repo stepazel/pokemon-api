@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using YolkStudio.Pokemon.Api.Shared;
 
-namespace YolkStudio.Pokemon.Api.Controllers;
+namespace YolkStudio.Pokemon.Api.Pokemons;
 
 [ApiController]
 [Route(BaseUrl +"pokemons")]

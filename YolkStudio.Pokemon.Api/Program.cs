@@ -1,14 +1,29 @@
+using FluentValidation;
+using YolkStudio.Pokemon.Infrastructure.Data;
+using YolkStudio.Pokemon.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using YolkStudio.Pokemon.Api.Trainers;
+using YolkStudio.Pokemon.Core.Trainer;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<IValidator<CreateTrainerRequest>, CreateTrainerValidator>();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// builder.Services.AddFluentValidationAutoValidation();
+
+// Zde referencuji Infrastructure layer, coz bychom mohli obejit vytvorenim projektu, ktery se stara o DI a registraci sluzeb.
+builder.Services.AddDbContext<PokemonDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITrainerService, TrainerService>();
+builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
+
 var app = builder.Build();
 
-// Enable Swagger UI
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
@@ -16,13 +31,8 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty;
 });
 
-// Configure the HTTP request pipeline.
 app.MapOpenApi();
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
