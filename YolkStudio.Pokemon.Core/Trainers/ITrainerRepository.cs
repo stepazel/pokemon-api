@@ -7,4 +7,5 @@ public interface ITrainerRepository
     Task<bool> DoesExistAsync(string name);
     Task<bool> DoesExistAsync(int id);
     Task<IEnumerable<Trainer>> GetAllAsync(); 
+    Task<Trainer?> GetTrainerWithPokemons(int id);
 }

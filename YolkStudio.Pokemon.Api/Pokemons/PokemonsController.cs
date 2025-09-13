@@ -37,7 +37,7 @@ public class PokemonController : BaseController
         var command = new AssignTrainerToPokemonCommand(id, request.TrainerId);
         var result = await _pokemonService.AssignTrainerToPokemon(command);
 
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             return result.ErrorType switch
             {

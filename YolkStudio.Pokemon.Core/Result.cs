@@ -2,13 +2,13 @@ namespace YolkStudio.Pokemon.Core;
 
 public class Result
 {
-    public bool Success { get; }
+    public bool IsSuccess { get; }
     public ErrorType? ErrorType { get; }
     public string? Message { get; }
 
-    protected Result(bool success, ErrorType? type, string? message)
+    protected Result(bool isSuccess, ErrorType? type, string? message)
     {
-        Success = success;
+        IsSuccess = isSuccess;
         ErrorType = type;
         Message = message;
     }
@@ -21,8 +21,8 @@ public class Result<T> : Result
 {
     public T? Value { get; }
 
-    private Result(bool success, T? value, ErrorType? type, string? message)
-        : base(success, type, message)
+    private Result(bool isSuccess, T? value, ErrorType? type, string? message)
+        : base(isSuccess, type, message)
     {
         Value = value;
     }

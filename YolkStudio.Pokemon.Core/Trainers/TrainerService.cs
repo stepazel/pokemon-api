@@ -1,4 +1,5 @@
 using YolkStudio.Pokemon.Core.Extensions;
+using YolkStudio.Pokemon.Core.Pokemons;
 
 namespace YolkStudio.Pokemon.Core.Trainers;
 
@@ -50,5 +51,34 @@ public class TrainerService : ITrainerService
             t.CreatedAt.ToUtcDateTimeOffset(),
             t.Wins,
             t.Losses));
+    }
+
+    public async Task<Result<TrainerWithPokemonsDto?>> GetTrainerWithPokemonsAsync(GetTrainerWithPokemonsQuery query)
+    {
+        var trainer = await _repository.GetTrainerWithPokemons(query.Id);
+
+        if (trainer is null)
+        {
+            return Result<TrainerWithPokemonsDto?>.Fail(ErrorType.NotFound,
+                "Trainer with the specified id doesn't exist");
+        }
+
+        var dto = new TrainerWithPokemonsDto(
+            trainer.Id!.Value,
+            trainer.Name,
+            trainer.Region,
+            trainer.BirthDate.ToUtcDateTimeOffset(),
+            trainer.CreatedAt.ToUtcDateTimeOffset(),
+            trainer.Wins,
+            trainer.Losses,
+            trainer.Pokemons.Select(p => new PokemonDto(
+                p.Id,
+                p.Name,
+                p.Level,
+                new ElementDto(p.Id, p.Type.Name),
+                p.Health,
+                new TrainerSummaryDto(p.OwnerId!.Value, p.Owner!.Name, p.Owner.Region),
+                p.CaughtAt)));
+        return Result<TrainerWithPokemonsDto?>.Ok(dto);
     }
 }

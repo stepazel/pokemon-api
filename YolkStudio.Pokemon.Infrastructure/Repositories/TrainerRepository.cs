@@ -39,4 +39,12 @@ public class TrainerRepository : ITrainerRepository
     {
         return await _context.Trainers.ToListAsync();
     }
+
+    public async Task<Trainer?> GetTrainerWithPokemons(int id)
+    {
+        return await _context.Trainers
+            .Include(t => t.Pokemons)
+            .ThenInclude(p => p.Type)
+            .FirstOrDefaultAsync(t => t.Id == id);
+    }
 }

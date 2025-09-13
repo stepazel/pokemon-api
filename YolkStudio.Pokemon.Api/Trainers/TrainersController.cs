@@ -2,6 +2,7 @@ using System.Net;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using YolkStudio.Pokemon.Api.Shared;
+using YolkStudio.Pokemon.Core;
 using YolkStudio.Pokemon.Core.Trainers;
 
 namespace YolkStudio.Pokemon.Api.Trainers;
@@ -38,7 +39,7 @@ public class TrainersController : BaseController
             request.BirthDate.UtcDateTime);
 
         var result = await _trainerService.CreateTrainerAsync(addTrainerCommand);
-        if (result.Success)
+        if (result.IsSuccess)
         {
             return CreatedAtAction(nameof(GetTrainer), new { id = result.Value!.Id }, result.Value);
         }
@@ -55,15 +56,32 @@ public class TrainersController : BaseController
         var result = await _trainerService.GetAllTrainersAsync(new GetAllTrainersQuery());
 
         return Ok(new ApiResponse<IEnumerable<TrainerDto>>(
-             HttpStatusCode.OK, "Trainers retrieved successfully", result));
+            HttpStatusCode.OK, "Trainers retrieved successfully", result));
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetTrainer(int id)
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ApiResponse<TrainerWithPokemonsDto>>> GetTrainer(int id)
     {
-        return Ok();
+        var result = await _trainerService.GetTrainerWithPokemonsAsync(new GetTrainerWithPokemonsQuery(id));
+
+        if (result.IsSuccess is false)
+        {
+            return result.ErrorType switch
+            {
+                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                _ => BadRequest()
+            };
+        }
+        
+        return Ok(new ApiResponse<TrainerWithPokemonsDto>(
+            HttpStatusCode.OK,
+            "Trainer retrieved successfully",
+            result.Value));
     }
-    
+
     // TODO
     // Retrieve a specific trainer along with their Pokemons
     // Update trainer information
