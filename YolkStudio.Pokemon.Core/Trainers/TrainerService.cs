@@ -16,15 +16,16 @@ public class TrainerService : ITrainerService
         var doesExist = await _repository.DoesExistAsync(command.Name);
         if (doesExist)
         {
-            return Result<TrainerCreatedDto>.Fail($"Trainer with name {command.Name} already exists");
+            return Result<TrainerCreatedDto>.Fail(ErrorType.Conflict,
+                $"Trainer with name {command.Name} already exists");
         }
-        
+
         var trainer = new Trainer(
             null,
             command.Name,
             command.Region,
             command.BirthDate,
-            DateTime.UtcNow, 
+            DateTime.UtcNow,
             0,
             0);
         var createdTrainer = await _repository.AddAsync(trainer);

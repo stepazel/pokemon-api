@@ -9,8 +9,8 @@ public record Pokemon
     public int Level { get; init; }
     public int Health { get; init; }
     
-    public int? OwnerId { get; init; } 
-    public Trainer? Owner { get; init; } 
+    public int? OwnerId { get; set; } 
+    public Trainer? Owner { get; set; } 
     
     public int TypeId { get; init; }
     public Element Type { get; init; }

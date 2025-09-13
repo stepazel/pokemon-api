@@ -8,8 +8,8 @@ public record ApiResponse<T>(
     T? Data = default,
     bool Success = true);
 
-public record ErrorResponse(
+public record ErrorResponse(// TODO vytvorit validation response - logicky je to neco jineho
     HttpStatusCode StatusCode,
     string Message,
-    IEnumerable<string> Errors,
+    IEnumerable<string>? Errors = null,
     bool Success = false);

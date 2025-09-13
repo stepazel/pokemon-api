@@ -3,28 +3,41 @@ namespace YolkStudio.Pokemon.Core;
 public class Result
 {
     public bool Success { get; }
-    public string? Error { get; }
+    public ErrorType? ErrorType { get; }
+    public string? Message { get; }
 
-    protected Result(bool success, string? error)
+    protected Result(bool success, ErrorType? type, string? message)
     {
         Success = success;
-        Error = error;
+        ErrorType = type;
+        Message = message;
     }
 
-    public static Result Ok() => new(true, null);
-    public static Result Fail(string error) => new(false, error);
+    public static Result Ok() => new(true, null, null);
+    public static Result Fail(ErrorType type, string message) => new(false, type, message);
 }
 
 public class Result<T> : Result
 {
     public T? Value { get; }
 
-    private Result(bool success, T? value, string? error)
-        : base(success, error)
+    private Result(bool success, T? value, ErrorType? type, string? message)
+        : base(success, type, message)
     {
         Value = value;
     }
 
-    public static Result<T> Ok(T value) => new(true, value, null);
-    public static new Result<T> Fail(string error) => new(false, default, error);
+    public static Result<T> Ok(T value) => new(true, value, null, null);
+    public new static Result<T> Fail(ErrorType type, string message) => new(false, default, type, message);
+}
+
+public enum ErrorType
+{
+    Failure,
+    Unexpected,
+    Validation,
+    Conflict,
+    NotFound,
+    Unauthorized,
+    Forbidden,
 }

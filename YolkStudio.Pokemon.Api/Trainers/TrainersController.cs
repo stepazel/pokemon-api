@@ -45,7 +45,7 @@ public class TrainersController : BaseController
 
         return Conflict(new ErrorResponse(
             HttpStatusCode.Conflict,
-            result.Error!,
+            result.Message!,
             []));
     }
 

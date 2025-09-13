@@ -20,9 +20,19 @@ public class TrainerRepository : ITrainerRepository
         return trainer;
     }
 
+    public async Task<Trainer?> GetByIdAsync(int id)
+    {
+        return await _context.Trainers.FirstOrDefaultAsync(t => t.Id == id);
+    }
+
     public async Task<bool> DoesExistAsync(string name)
     {
         return await _context.Trainers.AnyAsync(x => x.Name == name);
+    }
+
+    public async Task<bool> DoesExistAsync(int id)
+    {
+        return await _context.Trainers.AnyAsync(x => x.Id == id);
     }
 
     public async Task<IEnumerable<Trainer>> GetAllAsync()
