@@ -1,4 +1,4 @@
-namespace YolkStudio.Pokemon.Core.Trainer;
+namespace YolkStudio.Pokemon.Core.Trainers;
 
 public interface ITrainerService
 {

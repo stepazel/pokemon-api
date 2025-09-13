@@ -2,7 +2,7 @@ using System.Net;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using YolkStudio.Pokemon.Api.Shared;
-using YolkStudio.Pokemon.Core.Trainer;
+using YolkStudio.Pokemon.Core.Trainers;
 
 namespace YolkStudio.Pokemon.Api.Trainers;
 
@@ -42,12 +42,11 @@ public class TrainersController : BaseController
         {
             return CreatedAtAction(nameof(GetTrainer), new { id = result.Value!.Id }, result.Value);
         }
-        // return Ok(new TrainerResponse(HttpStatusCode.Created, "Trainer created successfully"));
 
         return Conflict(new ErrorResponse(
             HttpStatusCode.Conflict,
             result.Error!,
-            [])); // TODO otestovat
+            []));
     }
 
 

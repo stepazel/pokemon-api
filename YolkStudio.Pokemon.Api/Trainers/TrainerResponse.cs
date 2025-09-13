@@ -1,6 +1,6 @@
 using System.Net;
 using YolkStudio.Pokemon.Api.Shared;
-using YolkStudio.Pokemon.Core.Trainer;
+using YolkStudio.Pokemon.Core.Trainers;
 
 namespace YolkStudio.Pokemon.Api.Trainers;
 

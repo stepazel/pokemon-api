@@ -3,7 +3,7 @@ using YolkStudio.Pokemon.Infrastructure.Data;
 using YolkStudio.Pokemon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using YolkStudio.Pokemon.Api.Trainers;
-using YolkStudio.Pokemon.Core.Trainer;
+using YolkStudio.Pokemon.Core.Trainers;
 
 var builder = WebApplication.CreateBuilder(args);
 

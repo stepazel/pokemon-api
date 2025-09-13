@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using YolkStudio.Pokemon.Core.Trainer;
+using YolkStudio.Pokemon.Core.Trainers;
 using YolkStudio.Pokemon.Infrastructure.Data;
 
 namespace YolkStudio.Pokemon.Infrastructure.Repositories;
