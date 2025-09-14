@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using YolkStudio.Pokemon.Core.Pokemons;
 using YolkStudio.Pokemon.Core.Shared;
 using YolkStudio.Pokemon.Infrastructure.Data;
+using FuzzySharp;
 
 namespace YolkStudio.Pokemon.Infrastructure.Repositories;
 
@@ -16,11 +17,10 @@ public class PokemonRepository : IPokemonRepository
 
     public async Task<List<Core.Pokemons.Pokemon>> GetAsync(GetAllPokemonsQuery query)
     {
-        var pokemonsQuery = _context.Pokemons.AsQueryable();
-        if (string.IsNullOrWhiteSpace(query.Name) is false)
-        {
-            pokemonsQuery = pokemonsQuery.Where(p => p.Name.ToLower().Contains(query.Name.ToLower()));
-        }
+        var pokemonsQuery = _context.Pokemons
+            .Include(p => p.Owner)
+            .Include(p => p.Type)
+            .AsQueryable();
 
         if (string.IsNullOrWhiteSpace(query.Element) is false)
         {
@@ -50,17 +50,20 @@ public class PokemonRepository : IPokemonRepository
                 PokemonSortableProps.CaughtAt => query.SortDirection is SortDirection.Asc
                     ? pokemonsQuery.OrderBy(p => p.CaughtAt)
                     : pokemonsQuery.OrderByDescending(p => p.CaughtAt),
-                _ => throw new ArgumentOutOfRangeException(),
+                _ => throw new ArgumentOutOfRangeException(), // Can't happen since the enum is in the API.
             };
         }
+        var pokemons = await pokemonsQuery.ToListAsync();
 
-        var items = await pokemonsQuery
+        var filtered = string.IsNullOrWhiteSpace(query.Name)
+            ? pokemons
+            : pokemons.Where(p => p.Name.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase) ||
+                Fuzz.Ratio(p.Name, query.Name) > 80).ToList();
+
+        return filtered
             .Skip((query.PageNumber - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Include(p => p.Owner)
-            .Include(p => p.Type)
-            .ToListAsync();
-        return items;
+            .ToList();
     }
 
     public async Task<Core.Pokemons.Pokemon?> GetByIdAsync(int id)
