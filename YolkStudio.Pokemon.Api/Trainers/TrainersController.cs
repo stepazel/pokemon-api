@@ -12,18 +12,23 @@ namespace YolkStudio.Pokemon.Api.Trainers;
 public class TrainersController : BaseController
 {
     private readonly ITrainerService _trainerService;
-    private readonly IValidator<CreateTrainerRequest> _validator;
+    private readonly IValidator<CreateTrainerRequest> _createTrainerValidator;
+    private readonly IValidator<UpdateTrainerRequest> _updateTrainerValidator;
 
-    public TrainersController(ITrainerService trainerService, IValidator<CreateTrainerRequest> validator)
+    public TrainersController(
+        ITrainerService trainerService,
+        IValidator<CreateTrainerRequest> createTrainerValidator,
+        IValidator<UpdateTrainerRequest> updateTrainerValidator)
     {
         _trainerService = trainerService;
-        _validator = validator;
+        _createTrainerValidator = createTrainerValidator;
+        _updateTrainerValidator = updateTrainerValidator;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateTrainer([FromBody] CreateTrainerRequest request)
     {
-        var validationResult = await _validator.ValidateAsync(request);
+        var validationResult = await _createTrainerValidator.ValidateAsync(request);
 
         if (!validationResult.IsValid)
         {
@@ -75,15 +80,39 @@ public class TrainersController : BaseController
                 _ => BadRequest()
             };
         }
-        
+
         return Ok(new ApiResponse<TrainerWithPokemonsDto>(
             HttpStatusCode.OK,
             "Trainer retrieved successfully",
             result.Value));
     }
 
+    [HttpPatch("{id:int}")]
+    public async Task<ActionResult<ApiResponse<TrainerDto>>> UpdateTrainer(int id, [FromBody] UpdateTrainerRequest request)
+    {
+        var validationResult = await _updateTrainerValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            return UnprocessableEntity(new ErrorResponse(
+                HttpStatusCode.UnprocessableEntity,
+                "Some of the fields have incompatible values",
+                validationResult.Errors.Select(e => $"{e.PropertyName} - {e.ErrorMessage}")));
+        }
+        
+        var command = new UpdateTrainerCommand(id, request.Name, request.Region, request.Wins, request.Losses);
+        var result = await _trainerService.UpdateTrainerAsync(command);
+        if (result.IsError)
+        {
+            return result.ErrorType switch
+            {
+                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                _ => BadRequest()
+            };
+        }
+
+        return Ok(new ApiResponse<TrainerDto>(HttpStatusCode.OK, "Trainer updated successfully", result.Value));
+    }
+
     // TODO
-    // Retrieve a specific trainer along with their Pokemons
-    // Update trainer information
     // Delete a trainer
 }

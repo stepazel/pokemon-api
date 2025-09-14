@@ -5,6 +5,7 @@ public class Result
     public bool IsSuccess { get; }
     public ErrorType? ErrorType { get; }
     public string? Message { get; }
+    public bool IsError => !IsSuccess;
 
     protected Result(bool isSuccess, ErrorType? type, string? message)
     {

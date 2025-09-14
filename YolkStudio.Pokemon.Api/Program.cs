@@ -9,20 +9,21 @@ using YolkStudio.Pokemon.Core.Trainers;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IValidator<CreateTrainerRequest>, CreateTrainerValidator>();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// builder.Services.AddFluentValidationAutoValidation();
-
-// Zde referencuji Infrastructure layer, coz bychom mohli obejit vytvorenim projektu, ktery se stara o DI a registraci sluzeb.
+// Here I reference the Infrastructure layer, which could be avoided by having a separate project for DI.
 builder.Services.AddDbContext<PokemonDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Trainer services
+builder.Services.AddScoped<IValidator<CreateTrainerRequest>, CreateTrainerValidator>();
+builder.Services.AddScoped<IValidator<UpdateTrainerRequest>, UpdateTrainerValidator>();
 builder.Services.AddScoped<ITrainerService, TrainerService>();
 builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
 
+// Pokemon services
 builder.Services.AddScoped<IPokemonService, PokemonService>();
 builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 

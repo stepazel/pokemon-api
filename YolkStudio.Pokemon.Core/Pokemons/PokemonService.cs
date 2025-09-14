@@ -39,7 +39,7 @@ public class PokemonService : IPokemonService
             return Result<PokemonDto?>.Fail(ErrorType.Conflict,"The pokemon already has an owner");
         }
 
-        var trainer = await _trainerRepository.GetByIdAsync(command.TrainerId);
+        var trainer = await _trainerRepository.GetAsync(command.TrainerId);
         if (trainer is null)
         {
             return Result<PokemonDto?>.Fail(ErrorType.NotFound, "The trainer does not exist");

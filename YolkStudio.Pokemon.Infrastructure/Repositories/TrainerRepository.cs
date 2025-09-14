@@ -20,7 +20,7 @@ public class TrainerRepository : ITrainerRepository
         return trainer;
     }
 
-    public async Task<Trainer?> GetByIdAsync(int id)
+    public async Task<Trainer?> GetAsync(int id)
     {
         return await _context.Trainers.FirstOrDefaultAsync(t => t.Id == id);
     }
@@ -40,11 +40,16 @@ public class TrainerRepository : ITrainerRepository
         return await _context.Trainers.ToListAsync();
     }
 
-    public async Task<Trainer?> GetTrainerWithPokemons(int id)
+    public async Task<Trainer?> GetTrainerWithPokemonsAsync(int id)
     {
         return await _context.Trainers
             .Include(t => t.Pokemons)
             .ThenInclude(p => p.Type)
             .FirstOrDefaultAsync(t => t.Id == id);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }

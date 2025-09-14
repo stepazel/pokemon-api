@@ -20,12 +20,12 @@ public record Trainer
     }
 
     public int? Id { get; init; }
-    public string Name { get; init; }
-    public string Region { get; init; }
+    public string Name { get; set; }
+    public string Region { get; set; }
     public DateTime BirthDate { get; init; }
     public DateTime CreatedAt { get; init; }
-    public int Wins { get; init; }
-    public int Losses { get; init; }
+    public int Wins { get; set; }
+    public int Losses { get; set; }
     public IEnumerable<Pokemons.Pokemon> Pokemons { get; init; } = new List<Pokemons.Pokemon>();
 }
 

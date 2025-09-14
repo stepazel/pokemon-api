@@ -55,7 +55,7 @@ public class TrainerService : ITrainerService
 
     public async Task<Result<TrainerWithPokemonsDto?>> GetTrainerWithPokemonsAsync(GetTrainerWithPokemonsQuery query)
     {
-        var trainer = await _repository.GetTrainerWithPokemons(query.Id);
+        var trainer = await _repository.GetTrainerWithPokemonsAsync(query.Id);
 
         if (trainer is null)
         {
@@ -80,5 +80,34 @@ public class TrainerService : ITrainerService
                 new TrainerSummaryDto(p.OwnerId!.Value, p.Owner!.Name, p.Owner.Region),
                 p.CaughtAt)));
         return Result<TrainerWithPokemonsDto?>.Ok(dto);
+    }
+
+    public async Task<Result<TrainerDto?>> UpdateTrainerAsync(UpdateTrainerCommand command)
+    {
+        var trainer = await _repository.GetAsync(command.Id);
+
+        if (trainer is null)
+        {
+            return Result<TrainerDto?>.Fail(ErrorType.NotFound, "Trainer with this id doesn't exist");
+        }
+        if (command.Name is not null)
+            trainer.Name = command.Name;
+        if (command.Region is not null)
+            trainer.Region = command.Region;
+        if (command.Wins is not null)
+            trainer.Wins = command.Wins.Value;
+        if (command.Losses is not null)
+            trainer.Losses = command.Losses.Value;
+
+        await _repository.SaveChangesAsync();
+        var dto = new TrainerDto(
+            trainer.Id!.Value,
+            trainer.Name,
+            trainer.Region,
+            trainer.BirthDate.ToUtcDateTimeOffset(),
+            trainer.CreatedAt.ToUtcDateTimeOffset(),
+            trainer.Wins,
+            trainer.Losses);
+        return Result<TrainerDto?>.Ok(dto);
     }
 }
