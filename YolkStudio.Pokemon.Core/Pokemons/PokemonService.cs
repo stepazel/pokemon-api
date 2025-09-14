@@ -30,20 +30,16 @@ public class PokemonService : IPokemonService
     {
         var pokemon = await _repository.GetByIdAsync(command.PokemonId);
         if (pokemon is null)
-        {
             return Result<PokemonDto?>.Fail(ErrorType.NotFound, "The pokemon does not exist");
-        }
-        
-        if (pokemon.Owner is not null)
-        { 
+
+        if (pokemon.Owner is not null && pokemon.Owner.Id != command.TrainerId)
+        {
             return Result<PokemonDto?>.Fail(ErrorType.Conflict,"The pokemon already has an owner");
         }
 
         var trainer = await _trainerRepository.GetAsync(command.TrainerId);
         if (trainer is null)
-        {
             return Result<PokemonDto?>.Fail(ErrorType.NotFound, "The trainer does not exist");
-        }
         
         pokemon.Owner = trainer;
         await _repository.SaveChangesAsync();

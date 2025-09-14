@@ -12,14 +12,11 @@ public class TrainerService : ITrainerService
         _repository = repository;
     }
 
-    public async Task<Result<TrainerCreatedDto>> CreateTrainerAsync(AddTrainerCommand command)
+    public async Task<Result<TrainerDto>> CreateTrainerAsync(AddTrainerCommand command)
     {
         var doesExist = await _repository.DoesExistAsync(command.Name);
         if (doesExist)
-        {
-            return Result<TrainerCreatedDto>.Fail(ErrorType.Conflict,
-                $"Trainer with name {command.Name} already exists");
-        }
+            return Result<TrainerDto>.Fail(ErrorType.Conflict, $"Trainer with name {command.Name} already exists");
 
         var trainer = new Trainer(
             null,
@@ -30,8 +27,8 @@ public class TrainerService : ITrainerService
             0,
             0);
         var createdTrainer = await _repository.AddAsync(trainer);
-        return Result<TrainerCreatedDto>.Ok(new TrainerCreatedDto(
-            createdTrainer.Id!.Value, // TODO jak vyresit ten vykricnik?
+        return Result<TrainerDto>.Ok(new TrainerDto(
+            createdTrainer.Id!.Value,
             createdTrainer.Name,
             createdTrainer.Region,
             createdTrainer.BirthDate.ToUtcDateTimeOffset(),
@@ -56,12 +53,8 @@ public class TrainerService : ITrainerService
     public async Task<Result<TrainerWithPokemonsDto?>> GetTrainerWithPokemonsAsync(GetTrainerWithPokemonsQuery query)
     {
         var trainer = await _repository.GetTrainerWithPokemonsAsync(query.Id);
-
         if (trainer is null)
-        {
-            return Result<TrainerWithPokemonsDto?>.Fail(ErrorType.NotFound,
-                "Trainer with the specified id doesn't exist");
-        }
+            return Result<TrainerWithPokemonsDto?>.Fail(ErrorType.NotFound,"Trainer with the specified id doesn't exist");
 
         var dto = new TrainerWithPokemonsDto(
             trainer.Id!.Value,
@@ -85,11 +78,9 @@ public class TrainerService : ITrainerService
     public async Task<Result<TrainerDto?>> UpdateTrainerAsync(UpdateTrainerCommand command)
     {
         var trainer = await _repository.GetAsync(command.Id);
-
         if (trainer is null)
-        {
             return Result<TrainerDto?>.Fail(ErrorType.NotFound, "Trainer with this id doesn't exist");
-        }
+        
         if (command.Name is not null)
             trainer.Name = command.Name;
         if (command.Region is not null)
@@ -114,7 +105,6 @@ public class TrainerService : ITrainerService
     public async Task<Result> DeleteTrainerAsync(DeleteTrainerCommand command)
     {
         var trainer = await _repository.GetTrainerWithPokemonsAsync(command.Id);
-        
         if (trainer is null)
             return Result.Fail(ErrorType.NotFound, "Trainer with this id doesn't exist");
 
@@ -123,7 +113,6 @@ public class TrainerService : ITrainerService
 
         _repository.Remove(trainer);
         await _repository.SaveChangesAsync();
-        
         return Result.Ok();
     }
 }

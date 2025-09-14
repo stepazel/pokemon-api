@@ -26,40 +26,35 @@ public class TrainersController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTrainer([FromBody] CreateTrainerRequest request)
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<TrainerDto>> CreateTrainer([FromBody] CreateTrainerRequest request)
     {
         var validationResult = await _createTrainerValidator.ValidateAsync(request);
-
         if (!validationResult.IsValid)
         {
-            return UnprocessableEntity(new ErrorResponse(
+            return UnprocessableEntity(new ValidationErrorResponse(
                 HttpStatusCode.UnprocessableEntity,
                 "Some of the fields have incompatible values",
                 validationResult.Errors.Select(e => $"{e.PropertyName} - {e.ErrorMessage}")));
         }
 
-        var addTrainerCommand = new AddTrainerCommand(
-            request.Name,
-            request.Region,
-            request.BirthDate.UtcDateTime);
-
+        var addTrainerCommand = new AddTrainerCommand(request.Name, request.Region, request.BirthDate.UtcDateTime);
         var result = await _trainerService.CreateTrainerAsync(addTrainerCommand);
-        if (result.IsSuccess)
-        {
-            return CreatedAtAction(nameof(GetTrainer), new { id = result.Value!.Id }, result.Value);
-        }
-
-        return Conflict(new ErrorResponse(
-            HttpStatusCode.Conflict,
-            result.Message!,
-            []));
+        if (result.IsError)
+            return Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!));
+        
+        return CreatedAtAction(nameof(GetTrainer), new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllTrainers()
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<IEnumerable<TrainerDto>>>> GetAllTrainers()
     {
         var result = await _trainerService.GetAllTrainersAsync(new GetAllTrainersQuery());
-
         return Ok(new ApiResponse<IEnumerable<TrainerDto>>(
             HttpStatusCode.OK, "Trainers retrieved successfully", result));
     }
@@ -71,12 +66,11 @@ public class TrainersController : BaseController
     public async Task<ActionResult<ApiResponse<TrainerWithPokemonsDto>>> GetTrainer(int id)
     {
         var result = await _trainerService.GetTrainerWithPokemonsAsync(new GetTrainerWithPokemonsQuery(id));
-
         if (result.IsSuccess is false)
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
                 _ => BadRequest()
             };
         }
@@ -88,12 +82,16 @@ public class TrainersController : BaseController
     }
 
     [HttpPatch("{id:int}")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<TrainerDto>>> UpdateTrainer(int id, [FromBody] UpdateTrainerRequest request)
     {
         var validationResult = await _updateTrainerValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            return UnprocessableEntity(new ErrorResponse(
+            return UnprocessableEntity(new ValidationErrorResponse(
                 HttpStatusCode.UnprocessableEntity,
                 "Some of the fields have incompatible values",
                 validationResult.Errors.Select(e => $"{e.PropertyName} - {e.ErrorMessage}")));
@@ -105,7 +103,7 @@ public class TrainersController : BaseController
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
                 _ => BadRequest()
             };
         }
@@ -114,17 +112,18 @@ public class TrainersController : BaseController
     }
 
     [HttpDelete("{id:int}")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteTrainer(int id)
     {
         var command  = new DeleteTrainerCommand(id);
         var result = await _trainerService.DeleteTrainerAsync(command);
-
         if (result.IsError)
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
-                ErrorType.Conflict => Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!)),
+                ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                ErrorType.Conflict => Conflict(new ValidationErrorResponse(HttpStatusCode.Conflict, result.Message!)),
                 _ => BadRequest()
             };
         }

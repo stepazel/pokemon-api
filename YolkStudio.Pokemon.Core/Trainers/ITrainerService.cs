@@ -2,7 +2,7 @@ namespace YolkStudio.Pokemon.Core.Trainers;
 
 public interface ITrainerService
 {
-    Task<Result<TrainerCreatedDto>> CreateTrainerAsync(AddTrainerCommand command);
+    Task<Result<TrainerDto>> CreateTrainerAsync(AddTrainerCommand command);
     Task<IEnumerable<TrainerDto>> GetAllTrainersAsync(GetAllTrainersQuery query);
     Task<Result<TrainerWithPokemonsDto?>> GetTrainerWithPokemonsAsync(GetTrainerWithPokemonsQuery query);
     Task<Result<TrainerDto?>> UpdateTrainerAsync(UpdateTrainerCommand command);

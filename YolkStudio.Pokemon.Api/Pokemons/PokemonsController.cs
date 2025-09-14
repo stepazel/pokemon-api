@@ -18,7 +18,9 @@ public class PokemonController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<IEnumerable<PokemonDto>>>> GetAll()
     {
         var result = await _pokemonService.GetAllAsync(new GetAllPokemonsQuery());
         return Ok(new ApiResponse<IEnumerable<PokemonDto>>(
@@ -47,7 +49,6 @@ public class PokemonController : BaseController
             };
         }
 
-        return Ok(new ApiResponse<PokemonDto>(HttpStatusCode.OK, "Trained was assigned to the pokemon", result.Value));
+        return Ok(new ApiResponse<PokemonDto>(HttpStatusCode.OK, "Trainer was assigned to the pokemon", result.Value));
     }
-
 }
