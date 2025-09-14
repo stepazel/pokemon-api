@@ -30,7 +30,7 @@ public class TrainersController : BaseController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<TrainerDto>> CreateTrainer([FromBody] CreateTrainerRequest request)
+    public async Task<ActionResult<TrainerDto>> CreateAsync([FromBody] CreateTrainerRequest request)
     {
         var validationResult = await _createTrainerValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -42,21 +42,21 @@ public class TrainersController : BaseController
         }
 
         var addTrainerCommand = new AddTrainerCommand(request.Name, request.Region, request.BirthDate.UtcDateTime);
-        var result = await _trainerService.CreateTrainerAsync(addTrainerCommand);
+        var result = await _trainerService.CreateAsync(addTrainerCommand);
         if (result.IsError)
         {
             return Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!));
         }
 
-        return CreatedAtAction(nameof(GetTrainer), new { id = result.Value!.Id }, result.Value);
+        return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<IEnumerable<TrainerDto>>>> GetAllTrainers()
+    public async Task<ActionResult<ApiResponse<IEnumerable<TrainerDto>>>> GetAsync()
     {
-        var result = await _trainerService.GetAllTrainersAsync(new GetAllTrainersQuery());
+        var result = await _trainerService.GetTrainersAsync(new GetAllTrainersQuery());
         return Ok(new ApiResponse<IEnumerable<TrainerDto>>(
             HttpStatusCode.OK, "Trainers retrieved successfully", result));
     }
@@ -65,7 +65,7 @@ public class TrainersController : BaseController
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ApiResponse<TrainerWithPokemonsDto>>> GetTrainer(int id)
+    public async Task<ActionResult<ApiResponse<TrainerWithPokemonsDto>>> GetByIdAsync(int id)
     {
         var result = await _trainerService.GetTrainerWithPokemonsAsync(new GetTrainerWithPokemonsQuery(id));
         if (result.IsSuccess is false)
@@ -73,7 +73,7 @@ public class TrainersController : BaseController
             return result.ErrorType switch
             {
                 ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
-                _ => BadRequest()
+                _ => BadRequest(),
             };
         }
 
@@ -88,7 +88,7 @@ public class TrainersController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ApiResponse<TrainerDto>>> UpdateTrainer(int id, [FromBody] UpdateTrainerRequest request)
+    public async Task<ActionResult<ApiResponse<TrainerDto>>> UpdateAsync(int id, [FromBody] UpdateTrainerRequest request)
     {
         var validationResult = await _updateTrainerValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
@@ -106,7 +106,7 @@ public class TrainersController : BaseController
             return result.ErrorType switch
             {
                 ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
-                _ => BadRequest()
+                _ => BadRequest(),
             };
         }
 
@@ -116,7 +116,7 @@ public class TrainersController : BaseController
     [HttpDelete("{id:int}")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteTrainer(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         var command  = new DeleteTrainerCommand(id);
         var result = await _trainerService.DeleteTrainerAsync(command);
@@ -126,7 +126,7 @@ public class TrainersController : BaseController
             {
                 ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
                 ErrorType.Conflict => Conflict(new ValidationErrorResponse(HttpStatusCode.Conflict, result.Message!)),
-                _ => BadRequest()
+                _ => BadRequest(),
             };
         }
 

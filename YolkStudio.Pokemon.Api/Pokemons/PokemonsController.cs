@@ -37,7 +37,7 @@ public class PokemonController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<ApiResponse<PokemonDto>>> AssignTrainer(int id, AssignTrainerRequest request)
+    public async Task<ActionResult<ApiResponse<PokemonDto>>> AssignTrainerAsync(int id, AssignTrainerRequest request)
     {
         var command = new AssignTrainerToPokemonCommand(id, request.TrainerId);
         var result = await _pokemonService.AssignTrainerToPokemon(command);
@@ -48,7 +48,7 @@ public class PokemonController : BaseController
             {
                 ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
                 ErrorType.Conflict => Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!)),
-                _ => BadRequest(result.Message)
+                _ => BadRequest(result.Message),
             };
         }
 

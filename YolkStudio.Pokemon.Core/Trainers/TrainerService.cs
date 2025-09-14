@@ -12,7 +12,7 @@ public class TrainerService : ITrainerService
         _repository = repository;
     }
 
-    public async Task<Result<TrainerDto>> CreateTrainerAsync(AddTrainerCommand command)
+    public async Task<Result<TrainerDto>> CreateAsync(AddTrainerCommand command)
     {
         var doesExist = await _repository.DoesExistAsync(command.Name);
         if (doesExist)
@@ -39,7 +39,7 @@ public class TrainerService : ITrainerService
             createdTrainer.Losses));
     }
 
-    public async Task<IEnumerable<TrainerDto>> GetAllTrainersAsync(GetAllTrainersQuery query)
+    public async Task<IEnumerable<TrainerDto>> GetTrainersAsync(GetAllTrainersQuery query)
     {
         var allTrainers = await _repository.GetAllAsync();
         return allTrainers.Select(t => new TrainerDto(
