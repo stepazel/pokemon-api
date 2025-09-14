@@ -1,7 +1,10 @@
+using System.Net;
 using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics;
 using YolkStudio.Pokemon.Infrastructure.Data;
 using YolkStudio.Pokemon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using YolkStudio.Pokemon.Api.Shared;
 using YolkStudio.Pokemon.Api.Trainers;
 using YolkStudio.Pokemon.Core.Pokemons;
 using YolkStudio.Pokemon.Core.Trainers;
@@ -12,6 +15,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 // Here I reference the Infrastructure layer, which could be avoided by having a separate project for DI.
 builder.Services.AddDbContext<PokemonDbContext>(options =>
@@ -28,6 +33,8 @@ builder.Services.AddScoped<IPokemonService, PokemonService>();
 builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 
 var app = builder.Build();
+
+app.UseExceptionHandler(_ => {});
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
