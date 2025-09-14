@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using YolkStudio.Pokemon.Core.Pokemons;
+using YolkStudio.Pokemon.Core.Shared;
 using YolkStudio.Pokemon.Infrastructure.Data;
 
 namespace YolkStudio.Pokemon.Infrastructure.Repositories;
@@ -13,12 +14,53 @@ public class PokemonRepository : IPokemonRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Core.Pokemons.Pokemon>> GetAllAsync()
+    public async Task<List<Core.Pokemons.Pokemon>> GetAsync(GetAllPokemonsQuery query)
     {
-        return await _context.Pokemons
+        var pokemonsQuery = _context.Pokemons.AsQueryable();
+        if (string.IsNullOrWhiteSpace(query.Name) is false)
+        {
+            pokemonsQuery = pokemonsQuery.Where(p => p.Name.ToLower().Contains(query.Name.ToLower()));
+        }
+
+        if (string.IsNullOrWhiteSpace(query.Element) is false)
+        {
+            pokemonsQuery = pokemonsQuery.Where(p => p.Type.Name.ToLower().Contains(query.Element.ToLower()));
+        }
+
+        if (query.MinLevel.HasValue)
+        {
+            pokemonsQuery = pokemonsQuery.Where(p => p.Level >= query.MinLevel.Value);
+        }
+
+        if (query.MaxLevel.HasValue)
+        {
+            pokemonsQuery = pokemonsQuery.Where(p => p.Level <= query.MaxLevel.Value);
+        }
+
+        if (query.SortBy.HasValue)
+        {
+            pokemonsQuery = query.SortBy switch
+            {
+                PokemonSortableProps.Name => query.SortDirection is SortDirection.Asc
+                    ? pokemonsQuery.OrderBy(p => p.Name)
+                    : pokemonsQuery.OrderByDescending(p => p.Name),
+                PokemonSortableProps.Level => query.SortDirection is SortDirection.Asc
+                    ? pokemonsQuery.OrderBy(p => p.Level)
+                    : pokemonsQuery.OrderByDescending(p => p.Level),
+                PokemonSortableProps.CaughtAt => query.SortDirection is SortDirection.Asc
+                    ? pokemonsQuery.OrderBy(p => p.CaughtAt)
+                    : pokemonsQuery.OrderByDescending(p => p.CaughtAt),
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+        }
+
+        var items = await pokemonsQuery
+            .Skip((query.PageNumber - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Include(p => p.Owner)
             .Include(p => p.Type)
             .ToListAsync();
+        return items;
     }
 
     public async Task<Core.Pokemons.Pokemon?> GetByIdAsync(int id)
@@ -29,21 +71,13 @@ public class PokemonRepository : IPokemonRepository
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task SaveChangesAsync()
-    { 
-        await _context.SaveChangesAsync();
+    public async Task<int> GetCountAsync()
+    {
+        return await _context.Pokemons.CountAsync();
     }
 
-    public async Task<Core.Pokemons.Pokemon> AddOwnerToPokemonAsync(int id, int trainerId)
+    public async Task SaveChangesAsync()
     {
-        var pokemon = await _context.Pokemons
-            .Include(p => p.Type)
-            .Include(p => p.Owner)
-            .FirstAsync(p => p.Id == id);
-
-        pokemon.OwnerId = trainerId;
-
         await _context.SaveChangesAsync();
-        return pokemon;
     }
 }

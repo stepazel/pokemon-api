@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using YolkStudio.Pokemon.Api.Shared;
 using YolkStudio.Pokemon.Core;
 using YolkStudio.Pokemon.Core.Pokemons;
+using YolkStudio.Pokemon.Core.Shared;
 
 namespace YolkStudio.Pokemon.Api.Pokemons;
 
@@ -20,10 +21,12 @@ public class PokemonController : BaseController
     [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<IEnumerable<PokemonDto>>>> GetAll()
+    public async Task<ActionResult<ApiResponse<PagedResult<PokemonDto>>>> GetAsync([FromQuery] GetAllPokemonsQuery query) 
+    // A request record should be used here to be technically correct, but I'm lazy and this works.
+    // But it would be good to have an abstract Pagination/Sortable request to have custom validation for them without the need to repeat myself.
     {
-        var result = await _pokemonService.GetAllAsync(new GetAllPokemonsQuery());
-        return Ok(new ApiResponse<IEnumerable<PokemonDto>>(
+        var result = await _pokemonService.GetAsync(query);
+        return Ok(new ApiResponse<PagedResult<PokemonDto>>(
             HttpStatusCode.OK,
             "Pokemons retrieved successfully",
             result));

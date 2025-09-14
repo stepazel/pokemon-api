@@ -2,7 +2,8 @@ namespace YolkStudio.Pokemon.Core.Pokemons;
 
 public interface IPokemonRepository
 {
-    Task<IEnumerable<Pokemon>> GetAllAsync();
+    Task<List<Pokemon>> GetAsync(GetAllPokemonsQuery query);
     Task<Pokemon?> GetByIdAsync(int id);
+    Task<int> GetCountAsync();
     Task SaveChangesAsync();
 }

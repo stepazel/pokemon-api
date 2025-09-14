@@ -1,3 +1,4 @@
+using YolkStudio.Pokemon.Core.Shared;
 using YolkStudio.Pokemon.Core.Trainers;
 
 namespace YolkStudio.Pokemon.Core.Pokemons;
@@ -13,10 +14,12 @@ public class PokemonService : IPokemonService
         _trainerRepository = trainerRepository;
     }
 
-    public async Task<IEnumerable<PokemonDto>> GetAllAsync(GetAllPokemonsQuery query)
+    public async Task<PagedResult<PokemonDto>> GetAsync(GetAllPokemonsQuery query)
     {
-        var allPokemons = await _repository.GetAllAsync();
-        return allPokemons.Select(p => new PokemonDto(
+        var allPokemons = await _repository.GetAsync(query);
+        var totalCount = await _repository.GetCountAsync();
+
+        var pokemonDtos = allPokemons.Select(p => new PokemonDto(
             p.Id,
             p.Name,
             p.Level,
@@ -24,6 +27,7 @@ public class PokemonService : IPokemonService
             p.Health,
             p.Owner is null ? null : new TrainerSummaryDto(p.Owner.Id!.Value, p.Owner.Name, p.Owner.Region),
             p.CaughtAt));
+        return new PagedResult<PokemonDto>(pokemonDtos, totalCount, query.PageNumber, query.PageSize);
     }
 
     public async Task<Result<PokemonDto?>> AssignTrainerToPokemon(AssignTrainerToPokemonCommand command)
