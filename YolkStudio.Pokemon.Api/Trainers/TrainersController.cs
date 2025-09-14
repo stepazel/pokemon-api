@@ -113,6 +113,22 @@ public class TrainersController : BaseController
         return Ok(new ApiResponse<TrainerDto>(HttpStatusCode.OK, "Trainer updated successfully", result.Value));
     }
 
-    // TODO
-    // Delete a trainer
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteTrainer(int id)
+    {
+        var command  = new DeleteTrainerCommand(id);
+        var result = await _trainerService.DeleteTrainerAsync(command);
+
+        if (result.IsError)
+        {
+            return result.ErrorType switch
+            {
+                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                ErrorType.Conflict => Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!)),
+                _ => BadRequest()
+            };
+        }
+
+        return Ok(new ApiResponse<object>(HttpStatusCode.OK, "Trainer deleted successfully"));
+    }
 }

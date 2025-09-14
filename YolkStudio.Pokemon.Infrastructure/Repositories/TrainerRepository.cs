@@ -48,6 +48,11 @@ public class TrainerRepository : ITrainerRepository
             .FirstOrDefaultAsync(t => t.Id == id);
     }
 
+    public void Remove(Trainer trainer)
+    {
+        _context.Trainers.Remove(trainer);
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

@@ -110,4 +110,20 @@ public class TrainerService : ITrainerService
             trainer.Losses);
         return Result<TrainerDto?>.Ok(dto);
     }
+
+    public async Task<Result> DeleteTrainerAsync(DeleteTrainerCommand command)
+    {
+        var trainer = await _repository.GetTrainerWithPokemonsAsync(command.Id);
+        
+        if (trainer is null)
+            return Result.Fail(ErrorType.NotFound, "Trainer with this id doesn't exist");
+
+        if (trainer.Pokemons.Any())
+            return Result.Fail(ErrorType.Conflict, "Trainer has pokemons assigned to them");
+
+        _repository.Remove(trainer);
+        await _repository.SaveChangesAsync();
+        
+        return Result.Ok();
+    }
 }

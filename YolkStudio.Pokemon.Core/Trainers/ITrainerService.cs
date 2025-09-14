@@ -6,4 +6,5 @@ public interface ITrainerService
     Task<IEnumerable<TrainerDto>> GetAllTrainersAsync(GetAllTrainersQuery query);
     Task<Result<TrainerWithPokemonsDto?>> GetTrainerWithPokemonsAsync(GetTrainerWithPokemonsQuery query);
     Task<Result<TrainerDto?>> UpdateTrainerAsync(UpdateTrainerCommand command);
+    Task<Result> DeleteTrainerAsync(DeleteTrainerCommand command);
 }

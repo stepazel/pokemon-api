@@ -7,5 +7,6 @@ public interface ITrainerRepository
     Task<bool> DoesExistAsync(string name);
     Task<IEnumerable<Trainer>> GetAllAsync(); 
     Task<Trainer?> GetTrainerWithPokemonsAsync(int id);
+    void Remove(Trainer trainer);
     Task SaveChangesAsync();
 }
