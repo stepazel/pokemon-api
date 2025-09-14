@@ -1,3 +1,4 @@
+// ReSharper disable NotAccessedPositionalProperty.Global
 namespace YolkStudio.Pokemon.Core.Pokemons;
 
 public record PokemonDto(

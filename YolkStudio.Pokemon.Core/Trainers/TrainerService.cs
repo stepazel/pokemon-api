@@ -16,7 +16,9 @@ public class TrainerService : ITrainerService
     {
         var doesExist = await _repository.DoesExistAsync(command.Name);
         if (doesExist)
+        {
             return Result<TrainerDto>.Fail(ErrorType.Conflict, $"Trainer with name {command.Name} already exists");
+        }
 
         var trainer = new Trainer(
             null,
@@ -54,7 +56,10 @@ public class TrainerService : ITrainerService
     {
         var trainer = await _repository.GetTrainerWithPokemonsAsync(query.Id);
         if (trainer is null)
-            return Result<TrainerWithPokemonsDto?>.Fail(ErrorType.NotFound,"Trainer with the specified id doesn't exist");
+        {
+            return Result<TrainerWithPokemonsDto?>.Fail(ErrorType.NotFound,
+                "Trainer with the specified id doesn't exist");
+        }
 
         var dto = new TrainerWithPokemonsDto(
             trainer.Id!.Value,
@@ -79,16 +84,29 @@ public class TrainerService : ITrainerService
     {
         var trainer = await _repository.GetAsync(command.Id);
         if (trainer is null)
+        {
             return Result<TrainerDto?>.Fail(ErrorType.NotFound, "Trainer with this id doesn't exist");
-        
+        }
+
         if (command.Name is not null)
+        {
             trainer.Name = command.Name;
+        }
+
         if (command.Region is not null)
+        {
             trainer.Region = command.Region;
+        }
+
         if (command.Wins is not null)
+        {
             trainer.Wins = command.Wins.Value;
+        }
+
         if (command.Losses is not null)
+        {
             trainer.Losses = command.Losses.Value;
+        }
 
         await _repository.SaveChangesAsync();
         var dto = new TrainerDto(
@@ -106,10 +124,14 @@ public class TrainerService : ITrainerService
     {
         var trainer = await _repository.GetTrainerWithPokemonsAsync(command.Id);
         if (trainer is null)
+        {
             return Result.Fail(ErrorType.NotFound, "Trainer with this id doesn't exist");
+        }
 
         if (trainer.Pokemons.Any())
+        {
             return Result.Fail(ErrorType.Conflict, "Trainer has pokemons assigned to them");
+        }
 
         _repository.Remove(trainer);
         await _repository.SaveChangesAsync();

@@ -44,8 +44,10 @@ public class TrainersController : BaseController
         var addTrainerCommand = new AddTrainerCommand(request.Name, request.Region, request.BirthDate.UtcDateTime);
         var result = await _trainerService.CreateTrainerAsync(addTrainerCommand);
         if (result.IsError)
+        {
             return Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!));
-        
+        }
+
         return CreatedAtAction(nameof(GetTrainer), new { id = result.Value!.Id }, result.Value);
     }
 

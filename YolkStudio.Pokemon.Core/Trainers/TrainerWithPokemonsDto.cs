@@ -1,4 +1,5 @@
 using YolkStudio.Pokemon.Core.Pokemons;
+// ReSharper disable NotAccessedPositionalProperty.Global
 
 namespace YolkStudio.Pokemon.Core.Trainers;
 
