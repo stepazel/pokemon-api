@@ -22,7 +22,7 @@ DELETE FROM sqlite_sequence WHERE name='Trainers';
 
 -- Create Trainers table (included for completeness, even though we won't populate it)
 CREATE TABLE "Trainers" (
-                            "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                            "Id" INTEGER PRIMARY KEY,
                             "Name" VARCHAR(100) NOT NULL,
                             "Region" VARCHAR(50),
                             "Age" INT,
@@ -34,13 +34,13 @@ CREATE TABLE "Trainers" (
 
 -- Create Elements table (Pokemon types)
 CREATE TABLE "Elements" (
-                            "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                            "Id" INTEGER PRIMARY KEY,
                             "Name" VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Create Pokemon table
 CREATE TABLE "Pokemons" (
-                            "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                            "Id" INTEGER PRIMARY KEY,
                             "Name" VARCHAR(100) NOT NULL,
                             "Level" INT NOT NULL CHECK ("Level" > 0 AND "Level" <= 100),
                             "TypeId" INT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE "Pokemons" (
 
 -- Create Moves table
 CREATE TABLE "Moves" (
-                         "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                         "Id" INTEGER PRIMARY KEY,
                          "Name" VARCHAR(100) NOT NULL,
                          "Power" INT NOT NULL CHECK ("Power" >= 0),
                          "TypeId" INT NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE "Moves" (
 
 -- Create PokemonMoves junction table
 CREATE TABLE "PokemonMoves" (
-                                "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                                "Id" INTEGER PRIMARY KEY,
                                 "PokemonId" INT NOT NULL,
                                 "MoveId" INT NOT NULL,
                                 FOREIGN KEY ("PokemonId") REFERENCES "Pokemons"("Id") ON DELETE CASCADE,
