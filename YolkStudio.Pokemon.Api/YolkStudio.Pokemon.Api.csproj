@@ -25,5 +25,11 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="pokemon_database_data_init.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

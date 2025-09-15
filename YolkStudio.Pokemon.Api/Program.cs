@@ -1,6 +1,7 @@
 using System.Net;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Data.Sqlite;
 using YolkStudio.Pokemon.Infrastructure.Data;
 using YolkStudio.Pokemon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,21 @@ builder.Services.AddScoped<IPokemonService, PokemonService>();
 builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 
 var app = builder.Build();
+
+// !! This is just a hack for using SQLite in Heroku dyno, which is ephemeral and resets the file system once a day.
+using (app.Services.CreateScope())
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    using var connection = new SqliteConnection(connectionString);
+    connection.Open();
+
+    var scriptPath = Path.Combine(app.Environment.ContentRootPath, "pokemon_database_data_init.sql");
+    var script = File.ReadAllText(scriptPath);
+
+    using var command = connection.CreateCommand();
+    command.CommandText = script;
+    command.ExecuteNonQuery();
+}
 
 app.UseExceptionHandler(_ => {});
 

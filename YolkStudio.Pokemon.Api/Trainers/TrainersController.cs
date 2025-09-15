@@ -48,7 +48,7 @@ public class TrainersController : BaseController
             return Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!));
         }
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Value!.Id }, result.Value);
+        return CreatedAtAction("GetById", new { id = result.Value!.Id }, result.Value);
     }
 
     [HttpGet]
