@@ -14,11 +14,6 @@ DROP TABLE IF EXISTS "Moves";
 DROP TABLE IF EXISTS "Elements";
 DROP TABLE IF EXISTS "Trainers";
 -- 
-DELETE FROM sqlite_sequence WHERE name='PokemonMoves';
-DELETE FROM sqlite_sequence WHERE name='Pokemons';
-DELETE FROM sqlite_sequence WHERE name='Elements';
-DELETE FROM sqlite_sequence WHERE name='Moves';
-DELETE FROM sqlite_sequence WHERE name='Trainers';
 
 -- Create Trainers table (included for completeness, even though we won't populate it)
 CREATE TABLE "Trainers" (
