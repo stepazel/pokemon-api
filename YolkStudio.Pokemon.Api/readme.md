@@ -12,3 +12,12 @@ For an app this size, it still provides a somewhat clean separation of concerns,
 The code itself is organized in vertical slices, as I find this approach more readable and logical.
 ## Changes to the model
 - Changed Trainer's property Age to Birthdate.
+
+## My notes
+- Having HttpStatusCode and Success fields in the response unified schema is redundant, as this information is already 
+
+The app is, of course, in an unfinished state. Some endpoints lack validation, the trainers resource lacks pagination, sort and filter functionality and so on.
+
+The point is not to provide a production-ready app (thankfully, then it would be a job!:)), but a PoC where my approach to creating RESTful APIs is showcased.
+
+I had a lot of fun working on a Pokemon-themed assignment. And without any deadlines.:) 
