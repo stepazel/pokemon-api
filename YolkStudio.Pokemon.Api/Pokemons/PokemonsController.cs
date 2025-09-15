@@ -22,7 +22,7 @@ public class PokemonController : BaseController
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<PagedResult<PokemonDto>>>> GetAsync([FromQuery] GetAllPokemonsQuery query) 
-    // A request record should be used here to be technically correct, but I'm lazy and this works.
+    // A request record should be used here to be technically correct, but this works.
     // But it would be good to have an abstract Pagination/Sortable request to have custom validation for them without the need to repeat myself.
     {
         var result = await _pokemonService.GetAsync(query);
