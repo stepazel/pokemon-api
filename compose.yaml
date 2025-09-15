@@ -1,0 +1,7 @@
+﻿services:
+  yolkstudio.pokemon.api:
+    image: yolkstudio.pokemon.api
+    build:
+      context: .
+      dockerfile: YolkStudio.Pokemon.Api/Dockerfile
+
