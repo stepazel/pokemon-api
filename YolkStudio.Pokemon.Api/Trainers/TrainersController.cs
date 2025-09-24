@@ -35,9 +35,7 @@ public class TrainersController : BaseController
         var validationResult = await _createTrainerValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            return UnprocessableEntity(new ValidationErrorResponse(
-                HttpStatusCode.UnprocessableEntity,
-                "Some of the fields have incompatible values",
+            return UnprocessableEntity(new ValidationErrorResponse("Some of the fields have incompatible values",
                 validationResult.Errors.Select(e => $"{e.PropertyName} - {e.ErrorMessage}")));
         }
 
@@ -45,7 +43,7 @@ public class TrainersController : BaseController
         var result = await _trainerService.CreateAsync(addTrainerCommand);
         if (result.IsError)
         {
-            return Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!));
+            return Conflict(new ErrorResponse(result.Message!));
         }
 
         return CreatedAtAction("GetById", new { id = result.Value!.Id }, result.Value);
@@ -57,8 +55,7 @@ public class TrainersController : BaseController
     public async Task<ActionResult<ApiResponse<IEnumerable<TrainerDto>>>> GetAsync()
     {
         var result = await _trainerService.GetTrainersAsync(new GetAllTrainersQuery());
-        return Ok(new ApiResponse<IEnumerable<TrainerDto>>(
-            HttpStatusCode.OK, "Trainers retrieved successfully", result));
+        return Ok(new ApiResponse<IEnumerable<TrainerDto>>("Trainers retrieved successfully", result));
     }
 
     [HttpGet("{id:int}")]
@@ -72,14 +69,12 @@ public class TrainersController : BaseController
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                ErrorType.NotFound => NotFound(new ValidationErrorResponse(result.Message!)),
                 _ => BadRequest(),
             };
         }
 
-        return Ok(new ApiResponse<TrainerWithPokemonsDto>(
-            HttpStatusCode.OK,
-            "Trainer retrieved successfully",
+        return Ok(new ApiResponse<TrainerWithPokemonsDto>("Trainer retrieved successfully",
             result.Value));
     }
 
@@ -93,9 +88,7 @@ public class TrainersController : BaseController
         var validationResult = await _updateTrainerValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            return UnprocessableEntity(new ValidationErrorResponse(
-                HttpStatusCode.UnprocessableEntity,
-                "Some of the fields have incompatible values",
+            return UnprocessableEntity(new ValidationErrorResponse("Some of the fields have incompatible values",
                 validationResult.Errors.Select(e => $"{e.PropertyName} - {e.ErrorMessage}")));
         }
         
@@ -105,12 +98,12 @@ public class TrainersController : BaseController
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
+                ErrorType.NotFound => NotFound(new ValidationErrorResponse(result.Message!)),
                 _ => BadRequest(),
             };
         }
 
-        return Ok(new ApiResponse<TrainerDto>(HttpStatusCode.OK, "Trainer updated successfully", result.Value));
+        return Ok(new ApiResponse<TrainerDto>("Trainer updated successfully", result.Value));
     }
 
     [HttpDelete("{id:int}")]
@@ -124,12 +117,12 @@ public class TrainersController : BaseController
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ValidationErrorResponse(HttpStatusCode.NotFound, result.Message!)),
-                ErrorType.Conflict => Conflict(new ValidationErrorResponse(HttpStatusCode.Conflict, result.Message!)),
+                ErrorType.NotFound => NotFound(new ValidationErrorResponse(result.Message!)),
+                ErrorType.Conflict => Conflict(new ValidationErrorResponse(result.Message!)),
                 _ => BadRequest(),
             };
         }
 
-        return Ok(new ApiResponse<object>(HttpStatusCode.OK, "Trainer deleted successfully"));
+        return Ok(new ApiResponse<object>("Trainer deleted successfully"));
     }
 }

@@ -20,7 +20,7 @@ public class CustomExceptionHandler : IExceptionHandler
         _logger.LogError(ex, "An unexpected error occured");
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";
-        var response = new ErrorResponse(HttpStatusCode.InternalServerError, "An unexpected error occured");
+        var response = new ErrorResponse("An unexpected error occured");
         await context.Response.WriteAsJsonAsync(response, cancellationToken: cancellationToken);
         return true;
     }

@@ -1,17 +1,7 @@
-using System.Net;
-
 namespace YolkStudio.Pokemon.Api.Shared;
 
-public record ApiResponse<T>(
-    HttpStatusCode StatusCode,
-    string Message,
-    T? Data = default,
-    bool Success = true);
+public record ApiResponse<T>(string Message, T? Data = default);
 
-public record ValidationErrorResponse(
-    HttpStatusCode StatusCode,
-    string Message,
-    IEnumerable<string>? Errors = null,
-    bool Success = false);
+public record ValidationErrorResponse(string Message, IEnumerable<string>? Errors = null);
 
-public record ErrorResponse(HttpStatusCode StatusCode, string Message, bool Success = false);
+public record ErrorResponse(string Message);

@@ -26,10 +26,7 @@ public class PokemonController : BaseController
     // But it would be good to have an abstract Pagination/Sortable request to have custom validation for them without the need to repeat myself.
     {
         var result = await _pokemonService.GetAsync(query);
-        return Ok(new ApiResponse<PagedResult<PokemonDto>>(
-            HttpStatusCode.OK,
-            "Pokemons retrieved successfully",
-            result));
+        return Ok(new ApiResponse<PagedResult<PokemonDto>>("Pokemons retrieved successfully", result));
     }
 
     [HttpPut("{id:int}/trainer")]
@@ -46,12 +43,12 @@ public class PokemonController : BaseController
         {
             return result.ErrorType switch
             {
-                ErrorType.NotFound => NotFound(new ErrorResponse(HttpStatusCode.NotFound, result.Message!)),
-                ErrorType.Conflict => Conflict(new ErrorResponse(HttpStatusCode.Conflict, result.Message!)),
+                ErrorType.NotFound => NotFound(new ErrorResponse(result.Message!)),
+                ErrorType.Conflict => Conflict(new ErrorResponse(result.Message!)),
                 _ => BadRequest(result.Message),
             };
         }
 
-        return Ok(new ApiResponse<PokemonDto>(HttpStatusCode.OK, "Trainer was assigned to the pokemon", result.Value));
+        return Ok(new ApiResponse<PokemonDto>("Trainer was assigned to the pokemon", result.Value));
     }
 }
